@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@android:color/white">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/topBar"
+                  android:orientation="horizontal"
+                  android:layout_width="fill_parent"
+                  android:layout_height="50dp"
+                  android:layout_alignParentTop="true"
+                  android:background="@android:color/darker_gray"
+                  android:layout_margin="20dp">
+
+        <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="Test"
+                android:onClick="showDash"
+                />
+
+        <TextView
+                android:id="@+id/coins"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="x 00"
+                android:textColor="@android:color/black"
+                />
+
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:background="@android:color/darker_gray"
+                  android:id="@+id/bottomBar"
+                  android:orientation="horizontal"
+                  android:layout_width="fill_parent"
+                  android:layout_alignParentBottom="true"
+                  android:layout_height="50dp"
+                  android:layout_margin="20dp">
+
+        <Button
+                android:id="@+id/score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="score++"
+                android:onClick="addScore"
+                />
+
+        <Button
+                android:id="@+id/scoreSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="submit"
+                android:onClick="submitScore"
+                />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/mapArea"
+                  android:orientation="vertical"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:layout_below="@id/topBar"
+                  android:layout_above="@id/bottomBar"
+                  android:layout_marginRight="20dp"
+                  android:layout_marginLeft="20dp">
+
+        <com.google.android.maps.MapView
+                android:id="@+id/mapview"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:clickable="true"
+                android:apiKey="0RXhTqtcEwuHXarBIsYWM7MLQWFJcW5gfq5waFw"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
