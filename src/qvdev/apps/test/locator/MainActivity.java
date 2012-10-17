@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.*;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -17,6 +18,7 @@ import com.swarmconnect.SwarmActiveUser;
 import com.swarmconnect.SwarmLeaderboard;
 import com.swarmconnect.delegates.SwarmLoginListener;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 
@@ -52,6 +54,11 @@ public class MainActivity extends MapActivity
 
     private Drawable marker;
     private MyItemizedOverlay myItemizedOverlay;
+
+    /*
+    Sounds
+     */
+    private MediaPlayer mediaPlayer;
 
 
     /*
@@ -110,6 +117,7 @@ public class MainActivity extends MapActivity
 
         Swarm.init(this, SWARM_APP_ID, SWARM_APP_KEY, mySwarmLoginListener);
 
+
     }
 
     private void setLocationMan()
@@ -144,6 +152,14 @@ public class MainActivity extends MapActivity
         score++;
 
         setCoins(score);
+
+        if (mediaPlayer != null)
+        {
+            mediaPlayer.reset();
+        }
+        mediaPlayer = MediaPlayer.create(this, R.raw.smb_coin);
+        mediaPlayer.start();
+
     }
 
     private void setCoins(int coins)
@@ -153,46 +169,49 @@ public class MainActivity extends MapActivity
 
     public void submitScore(View v)
     {
-        // Then submit the score
-        MainActivity.leaderboard.submitScore(score);
-
-        if (score >= ACHIEVEMENT_LIMIT_1 && score < ACHIEVEMENT_LIMIT_2)
+        if (MainActivity.leaderboard != null)
         {
+            // Then submit the score
+            MainActivity.leaderboard.submitScore(score);
 
-            // Make sure that we have our achievements map.
-            if (MainActivity.achievements != null)
+            if (score >= ACHIEVEMENT_LIMIT_1 && score < ACHIEVEMENT_LIMIT_2)
             {
 
-                // Grab the achievement from our map.
-                SwarmAchievement achievement = MainActivity.achievements.get(ACHIEVEMENT_ID_1);
-
-                // No need to unlock more than once...
-                if (achievement != null && achievement.unlocked == false)
+                // Make sure that we have our achievements map.
+                if (MainActivity.achievements != null)
                 {
-                    achievement.unlock();
-                }
-            }
-        } else if (score >= ACHIEVEMENT_LIMIT_2)
-        {
 
-            // Make sure that we have our achievements map.
-            if (MainActivity.achievements != null)
+                    // Grab the achievement from our map.
+                    SwarmAchievement achievement = MainActivity.achievements.get(ACHIEVEMENT_ID_1);
+
+                    // No need to unlock more than once...
+                    if (achievement != null && achievement.unlocked == false)
+                    {
+                        achievement.unlock();
+                    }
+                }
+            } else if (score >= ACHIEVEMENT_LIMIT_2)
             {
 
-                // Grab the achievement from our map.
-                SwarmAchievement achievement = MainActivity.achievements.get(ACHIEVEMENT_ID_2);
-
-                // No need to unlock more than once...
-                if (achievement != null && achievement.unlocked == false)
+                // Make sure that we have our achievements map.
+                if (MainActivity.achievements != null)
                 {
-                    achievement.unlock();
+
+                    // Grab the achievement from our map.
+                    SwarmAchievement achievement = MainActivity.achievements.get(ACHIEVEMENT_ID_2);
+
+                    // No need to unlock more than once...
+                    if (achievement != null && achievement.unlocked == false)
+                    {
+                        achievement.unlock();
+                    }
                 }
             }
-        }
 
-        if (Swarm.isLoggedIn())
-        {
-            Swarm.user.saveCloudData(COLLECTED_COINS, "" + score);
+            if (Swarm.isLoggedIn())
+            {
+                Swarm.user.saveCloudData(COLLECTED_COINS, "" + score);
+            }
         }
     }
 
@@ -418,6 +437,7 @@ public class MainActivity extends MapActivity
     {
         super.onStop();
         locationManager.removeUpdates(listener);
+        submitScore(null);
     }
 
     private void enableLocationSettings()
