@@ -38,7 +38,7 @@ public class MainActivity extends MapActivity
 
     private static final String COLLECTED_COINS = "coins_collected";
 
-    public static final int MAX_COINS_IN_LIST = 20;
+    public static final int MAX_COINS_IN_LIST = 10;
     public static final int MAX_METERS_IN_SIGHT = 100;
     public static final int MIN_METERS_COINS_CATCH = 10;
 
@@ -47,7 +47,7 @@ public class MainActivity extends MapActivity
     private TextView scoreView;
 
     private MapView mapView;
-    private MyLocationOverlay myLocationOverlay;
+    private CustomLocationOverlay myLocationOverlay;
     private MapController myMapController;
 
     private Drawable marker;
@@ -81,12 +81,13 @@ public class MainActivity extends MapActivity
         mapView = (MapView) findViewById(R.id.mapview);
         scoreView = (TextView) findViewById(R.id.coins);
 
-        mapView.setBuiltInZoomControls(true);
+        mapView.setClickable(false);
+
 
         myMapController = mapView.getController();
         myMapController.setZoom(20); //Fixed Zoom Level
 
-        myLocationOverlay = new MyLocationOverlay(this, mapView);
+        myLocationOverlay = new CustomLocationOverlay(this, mapView);
 
         // add this overlay to the MapView and refresh it
         mapView.getOverlays().add(myLocationOverlay);
@@ -298,35 +299,11 @@ public class MainActivity extends MapActivity
 
             if (myLocationOverlay.getMyLocation() != null)
             {
-                Log.d("Location", "lat::" + myLocationOverlay.getMyLocation().getLatitudeE6() + "lng::" + myLocationOverlay.getMyLocation().getLongitudeE6());
+                //Log.d("Location", "lat::" + myLocationOverlay.getMyLocation().getLatitudeE6() + "lng::" + myLocationOverlay.getMyLocation().getLongitudeE6());
 
-                CenterLocation(myLocationOverlay.getMyLocation());
+                //CenterLocation(myLocationOverlay.getMyLocation());
 
-                if (myItemizedOverlay.size() < MAX_COINS_IN_LIST)
-                {
-                    // Determine a random location from the bounds set previously
-                    GeoPoint mapCenter = mapView.getMapCenter();
-                    GeoPoint southWest = mapView.getProjection().fromPixels(0, mapView.getHeight());
-                    GeoPoint northEast = mapView.getProjection().fromPixels(mapView.getWidth(), 0);
 
-                    int lngSpan = northEast.getLongitudeE6() - southWest.getLongitudeE6();
-                    int latSpan = northEast.getLatitudeE6() - southWest.getLatitudeE6();
-
-                    for (int i = 0; i < MAX_COINS_IN_LIST; i++)
-                    {
-                        int lat = (int) (southWest.getLatitudeE6() + latSpan * Math.random());
-                        int lng = (int) (southWest.getLongitudeE6() + lngSpan * Math.random());
-
-                        GeoPoint myGeoPoint = new GeoPoint(
-                                lat,
-                                lng);
-
-                        myItemizedOverlay.addItem(myGeoPoint, "myPoint1", "myPoint");
-                    }
-
-                }
-
-                collectCoin();
             }
         }
 
@@ -538,4 +515,38 @@ public class MainActivity extends MapActivity
         myLocationOverlay.disableMyLocation();
     }
 
+
+    public void determineCoins()
+    {
+        if (myLocationOverlay.getMyLocation() != null)
+        {
+            if (myItemizedOverlay.size() < MAX_COINS_IN_LIST)
+            {
+                // Determine a random location from the bounds set previously
+                GeoPoint mapCenter = mapView.getMapCenter();
+                GeoPoint southWest = mapView.getProjection().fromPixels(0, mapView.getHeight());
+                GeoPoint northEast = mapView.getProjection().fromPixels(mapView.getWidth(), 0);
+
+                int lngSpan = northEast.getLongitudeE6() - southWest.getLongitudeE6();
+                int latSpan = northEast.getLatitudeE6() - southWest.getLatitudeE6();
+
+                for (int i = myItemizedOverlay.size(); i < MAX_COINS_IN_LIST; i++)
+                {
+                    int lat = (int) (southWest.getLatitudeE6() + latSpan * Math.random());
+                    int lng = (int) (southWest.getLongitudeE6() + lngSpan * Math.random());
+
+                    GeoPoint myGeoPoint = new GeoPoint(
+                            lat,
+                            lng);
+
+                    myItemizedOverlay.addItem(myGeoPoint, "myPoint1", "myPoint");
+                }
+
+            }
+
+            CenterLocation(myLocationOverlay.getMyLocation());
+
+            collectCoin();
+        }
+    }
 }

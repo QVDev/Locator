@@ -39,6 +39,10 @@ public class MyItemizedOverlay extends ItemizedOverlay<OverlayItem>
         {
             overlayItemList.remove(0);
         }
+        else if(overlayItemList.size() < MainActivity.MAX_COINS_IN_LIST)
+        {
+
+        }
     }
 
     @Override
