@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/root"
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -14,18 +15,19 @@
                   android:background="@android:color/darker_gray"
                   android:layout_margin="20dp">
 
-        <Button
-                android:id="@+id/button"
+        <ImageView
+                android:id="@+id/coin"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:text="Test"
-                android:onClick="showDash"
+                android:gravity="center_vertical"
+                android:src="@android:drawable/star_big_on"
                 />
 
         <TextView
                 android:id="@+id/coins"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
+                android:gravity="center_vertical"
                 android:text="x 00"
                 android:textColor="@android:color/black"
                 />
@@ -48,6 +50,7 @@
                 android:layout_height="wrap_content"
                 android:text="score++"
                 android:onClick="addScore"
+                android:visibility="gone"
                 />
 
         <Button
@@ -56,6 +59,15 @@
                 android:layout_height="wrap_content"
                 android:text="submit"
                 android:onClick="submitScore"
+                android:visibility="gone"
+                />
+
+        <Button
+                android:id="@+id/button"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="My Profile"
+                android:onClick="showDash"
                 />
 
     </LinearLayout>

@@ -14,6 +14,8 @@ public class CustomLocationOverlay extends MyLocationOverlay
 
     private MainActivity activity;
 
+    private boolean isCentered = false;
+
     public CustomLocationOverlay(Context context, MapView mapView)
     {
         super(context, mapView);
@@ -27,10 +29,21 @@ public class CustomLocationOverlay extends MyLocationOverlay
 
     public synchronized void onLocationChanged(Location location)
     {
-        Log.d("MYLocation", "lat::" + location.getLatitude() + "lng::" + location.getProvider());
-
-        activity.determineCoins();
-
         super.onLocationChanged(location);
+
+        Log.d("MYLocation", "lat::" + location.getLatitude() + "lng::" + location.getProvider());
+        if (!isCentered)
+        {
+            runOnFirstFix(new Runnable()
+            {
+                public void run()
+                {
+                    isCentered = true;
+                    mapView.getController().animateTo(getMyLocation());
+//                    mapView.getController().setCenter(getMyLocation());
+                }
+            });
+        }
+        activity.determineCoins();
     }
 }

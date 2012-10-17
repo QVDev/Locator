@@ -294,7 +294,7 @@ public class MainActivity extends MapActivity
 //                    location.getLatitude() + ", " +
 //                            location.getLongitude()).sendToTarget();
 
-//            Log.d("Location", "lat::" + location.getLatitude() + "lng::" + location.getLongitude());
+            Log.d("Location", "lat::" + location.getLatitude() + "lng::" + location.getLongitude());
 
 
             if (myLocationOverlay.getMyLocation() != null)
