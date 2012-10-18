@@ -550,6 +550,7 @@ public class MainActivity extends MapActivity
         if (Swarm.isLoggedIn())
         {
             Swarm.user.getCloudData(COLLECTED_COINS, callback);
+            userNameView.setText(Swarm.user.username);
         }
         Swarm.setActive(this);
         myLocationOverlay.enableMyLocation();
