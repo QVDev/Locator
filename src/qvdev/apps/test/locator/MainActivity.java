@@ -26,6 +26,13 @@ import java.util.Random;
 
 public class MainActivity extends MapActivity
 {
+    /*
+    Maps keys
+     */
+    //0RXhTqtcEwuHXarBIsYWM7MLQWFJcW5gfq5waFw debug
+    //0srr_2pUysGmijiNMQAbapUzKLKOB9WqNyysS9Q release
+
+
     private static final int SWARM_APP_ID = 164;
     private static final String SWARM_APP_KEY = "3e302b4710dfaaa758ac1d2811a42d07";
 
