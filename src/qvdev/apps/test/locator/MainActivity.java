@@ -18,7 +18,6 @@ import com.swarmconnect.SwarmActiveUser;
 import com.swarmconnect.SwarmLeaderboard;
 import com.swarmconnect.delegates.SwarmLoginListener;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 
@@ -95,12 +94,13 @@ public class MainActivity extends MapActivity
         myMapController.setZoom(20); //Fixed Zoom Level
 
         myLocationOverlay = new CustomLocationOverlay(this, mapView);
+        myLocationOverlay.enableCompass();
 
         // add this overlay to the MapView and refresh it
         mapView.getOverlays().add(myLocationOverlay);
 
 
-        marker = getResources().getDrawable(android.R.drawable.star_big_on);
+        marker = getResources().getDrawable(R.drawable.retro_coin);
         int markerWidth = marker.getIntrinsicWidth();
         int markerHeight = marker.getIntrinsicHeight();
         marker.setBounds(0, markerHeight, markerWidth, 0);
@@ -116,8 +116,6 @@ public class MainActivity extends MapActivity
         Swarm.setActive(this);
 
         Swarm.init(this, SWARM_APP_ID, SWARM_APP_KEY, mySwarmLoginListener);
-
-
     }
 
     private void setLocationMan()
@@ -144,6 +142,7 @@ public class MainActivity extends MapActivity
 
     public void showDash(View v)
     {
+        playEffect(R.raw.smb_pause);
         Swarm.showDashboard();
     }
 
@@ -153,18 +152,24 @@ public class MainActivity extends MapActivity
 
         setCoins(score);
 
+        playEffect(R.raw.smb_coin);
+    }
+
+    private void playEffect(int id)
+    {
         if (mediaPlayer != null)
         {
             mediaPlayer.reset();
         }
-        mediaPlayer = MediaPlayer.create(this, R.raw.smb_coin);
+        mediaPlayer = MediaPlayer.create(this, id);
         mediaPlayer.start();
-
     }
 
     private void setCoins(int coins)
     {
-        scoreView.setText("x" + coins);
+        String formatted = String.format("%02d", coins);
+
+        scoreView.setText("x" + formatted);
     }
 
     public void submitScore(View v)
@@ -523,6 +528,11 @@ public class MainActivity extends MapActivity
     public void onResume()
     {
         super.onResume();
+        // Make sure a user is logged in...
+        if (Swarm.isLoggedIn())
+        {
+            Swarm.user.getCloudData(COLLECTED_COINS, callback);
+        }
         Swarm.setActive(this);
         myLocationOverlay.enableMyLocation();
     }
