@@ -16,7 +16,6 @@ public class MyItemizedOverlay extends ItemizedOverlay<OverlayItem>
 
     public MyItemizedOverlay(Drawable marker) {
         super(boundCenterBottom(marker));
-// TODO Auto-generated constructor stub
 
         populate();
     }
@@ -47,21 +46,17 @@ public class MyItemizedOverlay extends ItemizedOverlay<OverlayItem>
 
     @Override
     protected OverlayItem createItem(int i) {
-// TODO Auto-generated method stub
         return overlayItemList.get(i);
     }
 
     @Override
     public int size() {
-// TODO Auto-generated method stub
         return overlayItemList.size();
     }
 
     @Override
     public void draw(Canvas canvas, MapView mapView, boolean shadow) {
-// TODO Auto-generated method stub
         super.draw(canvas, mapView, shadow);
-//boundCenterBottom(marker);
     }
 
 }

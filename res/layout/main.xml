@@ -4,22 +4,48 @@
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:background="@android:color/white">
+                android:background="#5C94FC">
+
+    <ImageView
+            android:id="@+id/cloud_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:src="@drawable/cloud_small"
+            />
+
+    <ImageView
+            android:id="@+id/cloud_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/cloud_big"
+            />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:id="@+id/topBar"
                   android:orientation="horizontal"
-                  android:layout_width="fill_parent"
-                  android:layout_height="50dp"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
                   android:layout_alignParentTop="true"
-                  android:background="@android:color/darker_gray"
                   android:layout_margin="20dp">
+
+        <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:text=""
+                android:textColor="@android:color/white"
+                />
+
 
         <ImageView
                 android:id="@+id/coin"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
+                android:layout_marginLeft="50dp"
                 android:src="@drawable/retro_coin"
                 />
 
@@ -29,14 +55,13 @@
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
                 android:text="x 00"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 />
 
 
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:background="@android:color/darker_gray"
                   android:id="@+id/bottomBar"
                   android:orientation="horizontal"
                   android:layout_width="fill_parent"

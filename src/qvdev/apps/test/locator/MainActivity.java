@@ -10,6 +10,9 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.maps.*;
 import com.swarmconnect.Swarm;
@@ -46,6 +49,7 @@ public class MainActivity extends MapActivity
     private int score = 0;
 
     private TextView scoreView;
+    private TextView userNameView;
 
     private MapView mapView;
     private CustomLocationOverlay myLocationOverlay;
@@ -59,6 +63,11 @@ public class MainActivity extends MapActivity
      */
     private MediaPlayer mediaPlayer;
 
+    /*
+    Animation
+     */
+    ImageView coinScore;
+    Animation rotationAnimation;
 
     /*
     Location
@@ -84,6 +93,13 @@ public class MainActivity extends MapActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        userNameView = (TextView) findViewById(R.id.user_name);
+
+        coinScore = (ImageView) findViewById(R.id.coin);
+        rotationAnimation = AnimationUtils.loadAnimation(this, R.anim.coin_jump);
+
+        coinScore.startAnimation(rotationAnimation);
+
         mapView = (MapView) findViewById(R.id.mapview);
         scoreView = (TextView) findViewById(R.id.coins);
 
@@ -99,7 +115,6 @@ public class MainActivity extends MapActivity
         // add this overlay to the MapView and refresh it
         mapView.getOverlays().add(myLocationOverlay);
 
-
         marker = getResources().getDrawable(R.drawable.retro_coin);
         int markerWidth = marker.getIntrinsicWidth();
         int markerHeight = marker.getIntrinsicHeight();
@@ -110,11 +125,9 @@ public class MainActivity extends MapActivity
 
         mapView.postInvalidate();
 
-
         setLocationMan();
 
         Swarm.setActive(this);
-
         Swarm.init(this, SWARM_APP_ID, SWARM_APP_KEY, mySwarmLoginListener);
     }
 
@@ -151,6 +164,7 @@ public class MainActivity extends MapActivity
         score++;
 
         setCoins(score);
+        coinScore.startAnimation(rotationAnimation);
 
         playEffect(R.raw.smb_coin);
     }
@@ -268,6 +282,9 @@ public class MainActivity extends MapActivity
 
             // Make sure a user is logged in...
             user.getCloudData(COLLECTED_COINS, callback);
+
+            //Set the name of the user
+            userNameView.setText(user.username);
         }
 
         // This method is called when the user logs out.
@@ -410,7 +427,8 @@ public class MainActivity extends MapActivity
             {
                 myItemizedOverlay.removeItem(coin);
                 addScore(null);
-            } else if (distance > MAX_METERS_IN_SIGHT)
+            }
+            else if (distance > MAX_METERS_IN_SIGHT)
             {
                 myItemizedOverlay.removeItem(coin);
             }
