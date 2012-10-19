@@ -22,11 +22,11 @@
             android:src="@drawable/cloud_big"
             />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:id="@+id/topBar"
                   android:orientation="horizontal"
                   android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
+                  android:layout_height="50dp"
                   android:layout_alignParentTop="true"
                   android:layout_margin="20dp">
 
@@ -34,8 +34,8 @@
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:gravity="center_vertical"
-                android:text=""
+                android:text="username"
+                android:typeface="monospace"
                 android:textColor="@android:color/white"
                 />
 
@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
-                android:layout_marginLeft="50dp"
+                android:layout_centerHorizontal="true"
                 android:src="@drawable/retro_coin"
                 />
 
@@ -55,11 +55,34 @@
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical"
                 android:text="x 00"
+                android:layout_toRightOf="@id/coin"
+                android:typeface="monospace"
+                android:textColor="@android:color/white"
+                />
+
+        <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="Time"
+                android:layout_alignParentRight="true"
+                android:typeface="monospace"
+                android:textColor="@android:color/white"
+                />
+
+        <TextView
+                android:id="@+id/time_remaining"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:text="0"
+                android:layout_alignParentRight="true"
+                android:typeface="monospace"
                 android:textColor="@android:color/white"
                 />
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:id="@+id/bottomBar"
@@ -89,10 +112,11 @@
                 />
 
         <Button
-                android:id="@+id/button"
+                android:id="@+id/start_pause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Start"
+                android:typeface="monospace"
                 android:onClick="showDash"
                 android:background="@drawable/controls"
                 />

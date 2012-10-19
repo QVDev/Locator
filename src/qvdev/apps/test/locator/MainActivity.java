@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.location.*;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +56,7 @@ public class MainActivity extends MapActivity
 
     private TextView scoreView;
     private TextView userNameView;
+    private TextView timeRemaining;
 
     private MapView mapView;
     private CustomLocationOverlay myLocationOverlay;
@@ -64,6 +64,15 @@ public class MainActivity extends MapActivity
 
     private Drawable marker;
     private MyItemizedOverlay myItemizedOverlay;
+
+    /*
+    Timer for remaining time
+     */
+    private final static int LVL_TIME = 10;
+    private long remainingTime = LVL_TIME * 1000;
+    private boolean pause = true;
+    private boolean stopped = false;
+    private CountDownTimerPausable myTimer;
 
     /*
     Sounds
@@ -88,9 +97,6 @@ public class MainActivity extends MapActivity
 
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
-
-    private Handler mHandler;
-
     /**
      * Called when the activity is first created.
      */
@@ -101,6 +107,8 @@ public class MainActivity extends MapActivity
         setContentView(R.layout.main);
 
         userNameView = (TextView) findViewById(R.id.user_name);
+        timeRemaining = (TextView) findViewById(R.id.time_remaining);
+
 
         coinScore = (ImageView) findViewById(R.id.coin);
         rotationAnimation = AnimationUtils.loadAnimation(this, R.anim.coin_jump);
@@ -160,10 +168,56 @@ public class MainActivity extends MapActivity
         }
     }
 
+    private void startTimer()
+    {
+        myTimer = new CountDownTimerPausable(10000, 1000)
+        {
+            @Override
+            public void onTick(long millisUntilFinished)
+            {
+                timeRemaining.setText("" + millisRemaining);
+            }
+
+            @Override
+            public void onFinish()
+            {
+                timeRemaining.setText("" + 0);
+                stopped = true;
+                stopTimer();
+            }
+        }.start();
+    }
+
+    private void pauseTimer()
+    {
+        myTimer.pause();
+    }
+
+    private void unPauseTimer()
+    {
+        myTimer.start();
+    }
+
+    private void stopTimer()
+    {
+        myTimer = null;
+    }
+
+
     public void showDash(View v)
     {
-        playEffect(R.raw.smb_pause);
-        Swarm.showDashboard();
+        if (!pause && !stopped)
+        {
+            playEffect(R.raw.smb_pause);
+            Swarm.showDashboard();
+            pause = true;
+            pauseTimer();
+        }
+        else if (!pause && stopped)
+        {
+            stopped = false;
+            startTimer();
+        }
     }
 
     public void addScore(View v)
@@ -190,7 +244,7 @@ public class MainActivity extends MapActivity
     {
         String formatted = String.format("%02d", coins);
 
-        scoreView.setText("x" + formatted);
+        scoreView.setText("x " + formatted);
     }
 
     public void submitScore(View v)
@@ -292,6 +346,11 @@ public class MainActivity extends MapActivity
 
             //Set the name of the user
             userNameView.setText(user.username);
+
+            //Start the timer and game
+            pause = false;
+            stopped = false;
+            startTimer();
         }
 
         // This method is called when the user logs out.
@@ -358,19 +417,19 @@ public class MainActivity extends MapActivity
         @Override
         public void onStatusChanged(String s, int i, Bundle bundle)
         {
-            //To change body of implemented methods use File | Settings | File Templates.
+
         }
 
         @Override
         public void onProviderEnabled(String s)
         {
-            //To change body of implemented methods use File | Settings | File Templates.
+
         }
 
         @Override
         public void onProviderDisabled(String s)
         {
-            //To change body of implemented methods use File | Settings | File Templates.
+
         }
 
     };
@@ -434,8 +493,7 @@ public class MainActivity extends MapActivity
             {
                 myItemizedOverlay.removeItem(coin);
                 addScore(null);
-            }
-            else if (distance > MAX_METERS_IN_SIGHT)
+            } else if (distance > MAX_METERS_IN_SIGHT)
             {
                 myItemizedOverlay.removeItem(coin);
             }
@@ -558,6 +616,16 @@ public class MainActivity extends MapActivity
         {
             Swarm.user.getCloudData(COLLECTED_COINS, callback);
             userNameView.setText(Swarm.user.username);
+            if(myTimer != null && myTimer.isPaused)
+            {
+                unPauseTimer();
+            }
+            else
+            {
+                startTimer();
+            }
+            pause = false;
+            stopped = false;
         }
         Swarm.setActive(this);
         myLocationOverlay.enableMyLocation();
@@ -574,35 +642,38 @@ public class MainActivity extends MapActivity
 
     public void determineCoins()
     {
-        if (myLocationOverlay.getMyLocation() != null)
+        if (!pause || !stopped)
         {
-            if (myItemizedOverlay.size() < MAX_COINS_IN_LIST)
+            if (myLocationOverlay.getMyLocation() != null)
             {
-                // Determine a random location from the bounds set previously
-                GeoPoint mapCenter = mapView.getMapCenter();
-                GeoPoint southWest = mapView.getProjection().fromPixels(0, mapView.getHeight());
-                GeoPoint northEast = mapView.getProjection().fromPixels(mapView.getWidth(), 0);
-
-                int lngSpan = northEast.getLongitudeE6() - southWest.getLongitudeE6();
-                int latSpan = northEast.getLatitudeE6() - southWest.getLatitudeE6();
-
-                for (int i = myItemizedOverlay.size(); i < MAX_COINS_IN_LIST; i++)
+                if (myItemizedOverlay.size() < MAX_COINS_IN_LIST)
                 {
-                    int lat = (int) (southWest.getLatitudeE6() + latSpan * Math.random());
-                    int lng = (int) (southWest.getLongitudeE6() + lngSpan * Math.random());
+                    // Determine a random location from the bounds set previously
+                    GeoPoint mapCenter = mapView.getMapCenter();
+                    GeoPoint southWest = mapView.getProjection().fromPixels(0, mapView.getHeight());
+                    GeoPoint northEast = mapView.getProjection().fromPixels(mapView.getWidth(), 0);
 
-                    GeoPoint myGeoPoint = new GeoPoint(
-                            lat,
-                            lng);
+                    int lngSpan = northEast.getLongitudeE6() - southWest.getLongitudeE6();
+                    int latSpan = northEast.getLatitudeE6() - southWest.getLatitudeE6();
 
-                    myItemizedOverlay.addItem(myGeoPoint, "myPoint1", "myPoint");
+                    for (int i = myItemizedOverlay.size(); i < MAX_COINS_IN_LIST; i++)
+                    {
+                        int lat = (int) (southWest.getLatitudeE6() + latSpan * Math.random());
+                        int lng = (int) (southWest.getLongitudeE6() + lngSpan * Math.random());
+
+                        GeoPoint myGeoPoint = new GeoPoint(
+                                lat,
+                                lng);
+
+                        myItemizedOverlay.addItem(myGeoPoint, "myPoint1", "myPoint");
+                    }
+
                 }
 
+                CenterLocation(myLocationOverlay.getMyLocation());
+
+                collectCoin();
             }
-
-            CenterLocation(myLocationOverlay.getMyLocation());
-
-            collectCoin();
         }
     }
 }
