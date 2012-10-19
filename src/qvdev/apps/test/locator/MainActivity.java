@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.maps.*;
@@ -58,6 +59,8 @@ public class MainActivity extends MapActivity
     private TextView userNameView;
     private TextView timeRemaining;
 
+    private Button startPauseButton;
+
     private MapView mapView;
     private CustomLocationOverlay myLocationOverlay;
     private MapController myMapController;
@@ -68,11 +71,13 @@ public class MainActivity extends MapActivity
     /*
     Timer for remaining time
      */
-    private final static int LVL_TIME_MIN = 3;
-    private final static int LVL_TIME = (LVL_TIME_MIN*60) *1000;
+    private final static int LVL_TIME_MIN = 5;
+    private final static int LVL_TIME = (LVL_TIME_MIN * 60) * 1000;
     private boolean pause = true;
     private boolean stopped = false;
     private CountDownTimerPausable myTimer;
+
+    private boolean freeMode = false;
 
     /*
     Sounds
@@ -105,6 +110,8 @@ public class MainActivity extends MapActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        startPauseButton = (Button) findViewById(R.id.start_pause);
 
         userNameView = (TextView) findViewById(R.id.user_name);
         timeRemaining = (TextView) findViewById(R.id.time_remaining);
@@ -175,32 +182,53 @@ public class MainActivity extends MapActivity
             @Override
             public void onTick(long millisUntilFinished)
             {
-                timeRemaining.setText("" + millisRemaining/1000);
+                timeRemaining.setText("" + millisRemaining / 1000);
             }
 
             @Override
             public void onFinish()
             {
+
                 timeRemaining.setText("" + 0);
                 stopped = true;
                 stopTimer();
+                startPauseButton.setText("Start");
+                Swarm.showLeaderboards();
+
             }
         }.start();
     }
 
+    public void freeMode(View v)
+    {
+        if (!freeMode && myTimer != null)
+        {
+            freeMode = true;
+            pauseTimer();
+        } else if(myTimer != null)
+        {
+            freeMode = false;
+            unPauseTimer();
+        }
+    }
+
     private void pauseTimer()
     {
-        myTimer.pause();
+        if (myTimer != null && !myTimer.isPaused())
+            myTimer.pause();
     }
 
     private void unPauseTimer()
     {
-        myTimer.start();
+        if (myTimer != null && myTimer.isPaused())
+            myTimer.start();
     }
 
     private void stopTimer()
     {
         myTimer = null;
+        score = 0;
+        addScore(null);
     }
 
 
@@ -212,11 +240,11 @@ public class MainActivity extends MapActivity
             Swarm.showDashboard();
             pause = true;
             pauseTimer();
-        }
-        else if (!pause && stopped)
+        } else if (!pause && stopped)
         {
             stopped = false;
             startTimer();
+            startPauseButton.setText("Pause");
         }
     }
 
@@ -616,16 +644,12 @@ public class MainActivity extends MapActivity
         {
             Swarm.user.getCloudData(COLLECTED_COINS, callback);
             userNameView.setText(Swarm.user.username);
-            if(myTimer != null && myTimer.isPaused)
+            if (myTimer != null && myTimer.isPaused)
             {
                 unPauseTimer();
+                pause = false;
             }
-            else
-            {
-                startTimer();
-            }
-            pause = false;
-            stopped = false;
+
         }
         Swarm.setActive(this);
         myLocationOverlay.enableMyLocation();
@@ -642,7 +666,7 @@ public class MainActivity extends MapActivity
 
     public void determineCoins()
     {
-        if (!pause || !stopped)
+        if (!stopped)
         {
             if (myLocationOverlay.getMyLocation() != null)
             {
