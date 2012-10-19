@@ -68,8 +68,8 @@ public class MainActivity extends MapActivity
     /*
     Timer for remaining time
      */
-    private final static int LVL_TIME = 10;
-    private long remainingTime = LVL_TIME * 1000;
+    private final static int LVL_TIME_MIN = 3;
+    private final static int LVL_TIME = (LVL_TIME_MIN*60) *1000;
     private boolean pause = true;
     private boolean stopped = false;
     private CountDownTimerPausable myTimer;
@@ -170,12 +170,12 @@ public class MainActivity extends MapActivity
 
     private void startTimer()
     {
-        myTimer = new CountDownTimerPausable(10000, 1000)
+        myTimer = new CountDownTimerPausable(LVL_TIME, 1000)
         {
             @Override
             public void onTick(long millisUntilFinished)
             {
-                timeRemaining.setText("" + millisRemaining);
+                timeRemaining.setText("" + millisRemaining/1000);
             }
 
             @Override
